@@ -10,18 +10,18 @@
 			font-size: 1.2em;
 		}
 	</style>
-	<title>Filters</title>
+	<title>Custom Filters</title>
 </head>
 
 <body>
-	<h1>Filters</h1>
+	<h1>Custom Filters</h1>
 	<div ng-controller='MsgController'>
-		{{name}} has a message for you: <br>
-		{{sayMessage()}}
+		<p>Original: {{sayMessage()}}</p>
+		<p>Modified: {{sayLovesMessage()}}</p>
 		<div>
 			<button ng-click="feedYaakov()">Feed Yaakov</button>
 			<br>
-			<p>Cost: {{cookieCost | currency : "#" : 4}}</p>
+
 			<img ng-src="images/yaakov_{{stateOfBeing}}.png">
 		</div>
 	</div>
