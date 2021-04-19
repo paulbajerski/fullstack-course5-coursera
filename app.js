@@ -1,20 +1,16 @@
 (function () {
 	'use strict';
 
-	angular
-		.module('DIApp', [])
-		.controller('DIController', DIController);
+	angular.module('MsgApp', [])
+		.controller('MsgController', MsgController);
 
-	DIController.$inject = ['$scope', '$filter'];
+	MsgController.$inject = ['$scope'];
 
-	function DIController($scope, $filter) {
-		$scope.name = 'Pawel';
-
-		$scope.upper = function () {
-			var upCase = $filter('uppercase');
-			$scope.name = upCase($scope.name);
+	function MsgController($scope) {
+		$scope.name = "Yakov";
+		$scope.sayMessage = function () {
+			return $scope.name + " likes to eat healthy snacks at night!"
 		}
 	}
-
 
 })();
