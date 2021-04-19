@@ -18,6 +18,8 @@
 	<div ng-controller='MsgController'>
 		<p>Original: {{sayMessage()}}</p>
 		<p>Modified: {{sayLovesMessage()}}</p>
+		<p>Truth: {{sayLovesMessage() | truth: "healthy" : "cookie"}}</p>
+		<p>BIG TRUTH: {{sayLovesMessage() | truth: "healthy" : "cookie" | uppercase}}</p>
 		<div>
 			<button ng-click="feedYaakov()">Feed Yaakov</button>
 			<br>
