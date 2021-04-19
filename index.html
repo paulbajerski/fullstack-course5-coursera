@@ -10,17 +10,18 @@
 			font-size: 1.2em;
 		}
 	</style>
-	<title>Expressions and Interpolation</title>
+	<title>Filters</title>
 </head>
 
 <body>
-	<h1>Expressions and Interpolation</h1>
+	<h1>Filters</h1>
 	<div ng-controller='MsgController'>
 		{{name}} has a message for you: <br>
 		{{sayMessage()}}
 		<div>
-			<button ng-Click="feedYaakov()">Feed Yaakov</button>
+			<button ng-click="feedYaakov()">Feed Yaakov</button>
 			<br>
+			<p>Cost: {{cookieCost | currency : "#" : 4}}</p>
 			<img ng-src="images/yaakov_{{stateOfBeing}}.png">
 		</div>
 	</div>
