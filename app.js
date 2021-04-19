@@ -7,10 +7,16 @@
 	MsgController.$inject = ['$scope'];
 
 	function MsgController($scope) {
-		$scope.name = "Yakov";
+		$scope.name = "Yaakov";
+		$scope.stateOfBeing = 'hungry';
+
 		$scope.sayMessage = function () {
-			return $scope.name + " likes to eat healthy snacks at night!"
-		}
+			return "Yaakov likes to eat healthy snacks at night!";
+		};
+
+		$scope.feedYaakov = function () {
+			$scope.stateOfBeing = 'fed';
+		};
 	}
 
 })();
