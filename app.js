@@ -36,6 +36,21 @@
 			console.log('counter newValue: ' + newValue)
 		}); */
 
+		/*
+
+		Summary:
+
+		Digest cycle: running digest loops until all watchers report that nothing has changed
+			- dirty checking
+
+		Several ways to set up watchers:
+			- $scope.$watch - don't do this in a controller
+			- {{ someProp }}
+			- <input...ng-model="someProp"
+
+		Only applies to things done inside of the Angular context
+
+			*/
 	}
 
 })();
