@@ -1,42 +1,29 @@
 (function () {
 	'use strict';
 
-	angular.module('CounterApp', [])
-		.controller('CounterController', CounterController);
+	angular.module('BindingApp', [])
+		.controller('BindingController', BindingController);
 
-	CounterController.$inject = ['$scope', '$timeout'];
-	function CounterController($scope, $timeout) {
+	BindingController.$inject = ['$scope'];
+	function BindingController($scope) {
+		$scope.firstName = "Yaakov";
+		// $scope.fullName = "";
 
-		$scope.counter = 0;
-
-		// using $timeout service
-		$scope.upCounter = function () {
-			$timeout(function () {
-				$scope.counter++;
-				console.log("Counter incremented");
-			}, 2000);
+		$scope.showNumberOfWatchers = function () {
+			console.log("# of Watchers: ", $scope.$$watchersCount);
 		};
 
+		$scope.setFullName = function () {
+			$scope.fullName = $scope.firstName + " " + "Chaikin";
+		};
 
-		// using $apply - exceptions will be seen in angular context
-		/* $scope.upCounter = function () {
-			setTimeout(() => {
-				$scope.$apply(function () {
-					$scope.counter++;
-					console.log("Counter incremented");
-				});
-			}, 2000);
-		}; */
+		$scope.logFirstName = function () {
+			console.log("First name is: ", $scope.firstName);
+		};
 
-		// using $digest - won't catch errors inside setTimeout fn, exceptions will not be seen in angular context
-		/* $scope.upCounter = function () {
-			setTimeout(() => {
-				$scope.counter++;
-				console.log("Counter incremented");
-				$scope.$digest();
-			}, 2000);
-		}; */
-
+		$scope.logFullName = function () {
+			console.log("Full name is: ", $scope.fullName);
+		};
 	}
 
 })();
@@ -45,11 +32,15 @@
 
 Summary
 
-Digest Cycle does not get triggered automatically if events are unaware of Angular
+2-way binding (ng-model) means:
+	- Listener for change on input, automatically set up by Angular, updates prop value on $scope
+	- Direct update to prop value is automatically updated in UI
 
-Solution:
-	- Call $digest after your custom code
-	- Wrap your custom code inside of $apply
-	- Find Angular specific service that handles the same functionality, e.g., $timeout
+1-way binding ({{ propr }}) means:
+	- Direct update to prop value is automatically updated in UI
+
+1-time binding ({{ :: prop }}) means:
+	- *Initialized* value of prop is automatically updated in UI
+	- Watcher for prop is removed, so UI never again gets updated
 
 */
