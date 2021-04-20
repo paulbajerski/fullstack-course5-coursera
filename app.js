@@ -4,53 +4,52 @@
 	angular.module('CounterApp', [])
 		.controller('CounterController', CounterController);
 
-	CounterController.$inject = ['$scope'];
-	function CounterController($scope) {
-		$scope.onceCounter = 0;
+	CounterController.$inject = ['$scope', '$timeout'];
+	function CounterController($scope, $timeout) {
+
 		$scope.counter = 0;
-		$scope.name = 'Yaakov';
 
-		$scope.showNumberOfWatchers = function () {
-			console.log('# of Watchers: ' + $scope.$$watchersCount);
+		// using $timeout service
+		$scope.upCounter = function () {
+			$timeout(function () {
+				$scope.counter++;
+				console.log("Counter incremented");
+			}, 2000);
 		};
 
-		$scope.countOnce = function () {
-			$scope.onceCounter = 1;
-		};
 
-		$scope.incrementCounter = function () {
-			$scope.counter += 1;
-		};
+		// using $apply - exceptions will be seen in angular context
+		/* $scope.upCounter = function () {
+			setTimeout(() => {
+				$scope.$apply(function () {
+					$scope.counter++;
+					console.log("Counter incremented");
+				});
+			}, 2000);
+		}; */
 
-		$scope.$watch(function () {
-			console.log("Digest loop fired!")
-		})
+		// using $digest - won't catch errors inside setTimeout fn, exceptions will not be seen in angular context
+		/* $scope.upCounter = function () {
+			setTimeout(() => {
+				$scope.counter++;
+				console.log("Counter incremented");
+				$scope.$digest();
+			}, 2000);
+		}; */
 
-		/* $scope.$watch('onceCounter', function (oldValue, newValue) {
-			console.log('onceCounter oldValue: ' + oldValue)
-			console.log('onceCounter newValue: ' + newValue)
-		});
-
-		$scope.$watch('counter', function (oldValue, newValue) {
-			console.log('counter oldValue: ' + oldValue)
-			console.log('counter newValue: ' + newValue)
-		}); */
-
-		/*
-
-		Summary:
-
-		Digest cycle: running digest loops until all watchers report that nothing has changed
-			- dirty checking
-
-		Several ways to set up watchers:
-			- $scope.$watch - don't do this in a controller
-			- {{ someProp }}
-			- <input...ng-model="someProp"
-
-		Only applies to things done inside of the Angular context
-
-			*/
 	}
 
 })();
+
+/*
+
+Summary
+
+Digest Cycle does not get triggered automatically if events are unaware of Angular
+
+Solution:
+	- Call $digest after your custom code
+	- Wrap your custom code inside of $apply
+	- Find Angular specific service that handles the same functionality, e.g., $timeout
+
+*/
