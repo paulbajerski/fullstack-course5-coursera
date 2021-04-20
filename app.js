@@ -1,28 +1,43 @@
 (function () {
 	'use strict';
 
-	angular.module('BindingApp', [])
-		.controller('BindingController', BindingController);
+	var shoppingList1 = [
+		"Milk", "Donuts", "Cookies", "Chocolate", "Peanut Butter", "Pepto Bismol", "Pepto Bismol (Chocolate flavor)", "Pepto Bismol (Cookie flavor)"
+	];
 
-	BindingController.$inject = ['$scope'];
-	function BindingController($scope) {
-		$scope.firstName = "Yaakov";
-		// $scope.fullName = "";
+	var shoppingList2 = [
+		{
+			name: "Milk",
+			quantity: "2"
+		},
+		{
+			name: "Donuts",
+			quantity: "200"
+		},
+		{
+			name: "Cookies",
+			quantity: "300"
+		},
+		{
+			name: "Chocolate",
+			quantity: "5"
+		}
+	];
 
-		$scope.showNumberOfWatchers = function () {
-			console.log("# of Watchers: ", $scope.$$watchersCount);
-		};
+	angular.module('ShoppingListApp', [])
+		.controller('ShoppingListController', ShoppingListController);
 
-		$scope.setFullName = function () {
-			$scope.fullName = $scope.firstName + " " + "Chaikin";
-		};
+	ShoppingListController.$inject = ['$scope'];
+	function ShoppingListController($scope) {
+		$scope.shoppingList1 = shoppingList1;
+		$scope.shoppingList2 = shoppingList2;
 
-		$scope.logFirstName = function () {
-			console.log("First name is: ", $scope.firstName);
-		};
-
-		$scope.logFullName = function () {
-			console.log("Full name is: ", $scope.fullName);
+		$scope.addToList = function () {
+			var newItem = {
+				name: $scope.newItemName,
+				quantity: $scope.newItemQuantity
+			}
+			$scope.shoppingList2.push(newItem);
 		};
 	}
 
@@ -32,15 +47,12 @@
 
 Summary
 
-2-way binding (ng-model) means:
-	- Listener for change on input, automatically set up by Angular, updates prop value on $scope
-	- Direct update to prop value is automatically updated in UI
+ng-repeat is a direcive that extends the functionality of HTML elements it's applied to
+	- behaves very similar to for-each construct
 
-1-way binding ({{ propr }}) means:
-	- Direct update to prop value is automatically updated in UI
+ng-repeat="item in collection", where item can now be used in interpolation as an item in the collection at particular index of iteration
 
-1-time binding ({{ :: prop }}) means:
-	- *Initialized* value of prop is automatically updated in UI
-	- Watcher for prop is removed, so UI never again gets updated
+ng-repeat exposes a special $index property to the body of its host tag
+	- holds the numeric index of the curren titem in the looop
 
 */

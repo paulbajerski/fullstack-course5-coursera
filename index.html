@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app='BindingApp'>
+<html ng-app='ShoppingListApp'>
 
 <head>
 	<meta charset="utf-8">
@@ -10,23 +10,33 @@
 			font-size: 1.2em;
 		}
 	</style>
-	<title>2-way, 1-way, and 1-time binding</title>
+	<title>ng-repeat</title>
 </head>
 
 <body>
-	<h1>2-way, 1-way, and 1-time binding</h1>
-	<div ng-controller='BindingController'>
+	<h1>ng-repeat</h1>
+	<div ng-controller='ShoppingListController'>
+		<!-- Shopping List #1: -->
+		<h3>Shopping List:</h3>
+		<!-- <ul>
+			<li ng-repeat="item in shoppingList1">{{ item }}</li>
+		</ul> -->
 
-		<button ng-click="showNumberOfWatchers()">Log # of Watchers</button>
-		<button ng-click="setFullName()">Set Full Name</button><br>
+		<!-- Shopping List #2: -->
+<!-- 		<ul>
+			<li ng-repeat="item in shoppingList2">Buy {{item.quantity}} of {{item.name}}(s)</li>
+		</ul> -->
 
-		Full name is: {{ :: fullName }} <br>
-		<button ng-click="logFirstName()">Log First Name</button><br>
-		<button ng-click="logFullName()">Log Full Name</button><br>
+		<!-- Shopping List #3: -->
+		<input type="text" ng-model="shoppingList2[0].quantity">
+		<ul>
+			<li ng-repeat="item in shoppingList2">{{$index + 1}}. Buy {{item.quantity}} of {{item.name}}(s)</li>
+		</ul>
 
-		<div>
-			<input type="text" ng-model="firstName">
-		</div>
+		<input type="text" ng-model="newItemName" placeholder="item name">
+		<input type="text" ng-model="newItemQuantity" placeholder="item quantity">
+		<button ng-click="addToList()">Add To List</button>
+
 	</div>
 </body>
 
