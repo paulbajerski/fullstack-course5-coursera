@@ -16,28 +16,27 @@
 <body>
 	<h1>ng-repeat</h1>
 	<div ng-controller='ShoppingListController'>
-		<!-- Shopping List #1: -->
+		<!-- Searchable Shopping List: -->
 		<h3>Shopping List:</h3>
-		<!-- <ul>
-			<li ng-repeat="item in shoppingList1">{{ item }}</li>
-		</ul> -->
-
-		<!-- Shopping List #2: -->
-<!-- 		<ul>
-			<li ng-repeat="item in shoppingList2">Buy {{item.quantity}} of {{item.name}}(s)</li>
-		</ul> -->
-
-		<!-- Shopping List #3: -->
-		<input type="text" ng-model="shoppingList2[0].quantity">
+		<input type="text" ng-model="search">
 		<ul>
-			<li ng-repeat="item in shoppingList2">{{$index + 1}}. Buy {{item.quantity}} of {{item.name}}(s)</li>
+			<li ng-repeat="item in shoppingList | filter : search">{{ item }}</li>
 		</ul>
-
-		<input type="text" ng-model="newItemName" placeholder="item name">
-		<input type="text" ng-model="newItemQuantity" placeholder="item quantity">
-		<button ng-click="addToList()">Add To List</button>
-
 	</div>
 </body>
 
 </html>
+
+<!--
+
+	Summary
+
+	Array has a special function called filter
+		- creates new array where each item satisfies some condition of the comparison function passed into the filter function
+
+	Angular has a special filter called 'filter'
+		- provided a string as 1st argument, it will filter array it's applied to, matching all strin items against the provided one
+
+	ng-repeat="item in collection | filter : searchString"
+
+ -->
