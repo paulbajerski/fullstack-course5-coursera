@@ -2,71 +2,69 @@
   "use strict";
 
   angular
-    .module("ControllerAsApp", [])
-    .controller("ParentController1", ParentController1)
-    .controller("ChildController1", ChildController1)
-    .controller("ParentController2", ParentController2)
-    .controller("ChildController2", ChildController2);
+    .module("ShoppingListApp", [])
+    .controller("ShoppingListAddController", ShoppingListAddController)
+    .controller("ShoppingListShowController", ShoppingListShowController)
+    .service("ShoppingListService", ShoppingListService);
 
-  ParentController1.$inject = ["$scope"];
-  function ParentController1($scope) {
-    // $scope.parentValue = 1;
-    // $scope.pc = this;
-    // $scope.pc.parentValue = 1;
+  ShoppingListAddController.$inject = ["ShoppingListService"];
+  function ShoppingListAddController(ShoppingListService) {
+    var itemAdder = this;
+
+    itemAdder.itemName = "";
+    itemAdder.itemQuantity = "";
+
+    itemAdder.addItem = function () {
+      ShoppingListService.addItem(itemAdder.itemName, itemAdder.itemQuantity);
+    };
   }
 
-  ChildController1.$inject = ["$scope"];
-  function ChildController1($scope) {
-    // console.log("$scope.parentValue: ", $scope.parentValue);
-    // console.log("CHILD $scope: ", $scope);
-    // $scope.parentValue = 5;
-    // console.log("*** CHANGED: $scope.parentValue = 5 ***");
-    // console.log("$scope.parentValue: ", $scope.parentValue);
-    // console.log($scope);
-    // console.log("$scope.pc.parentValue: ", $scope.pc.parentValue);
-    // $scope.pc.parentValue = 5;
-    // console.log("** CHANGED: $scope.pc.parentValue = 5; ***");
-    // console.log("$scope.pc.parentValue: ", $scope.pc.parentValue);
-    // console.log("$scope: ", $scope);
-    // console.log("$scope.$parent.parentValue: ", $scope.$parent.parentValue);
+  ShoppingListShowController.$inject = ["ShoppingListService"];
+  function ShoppingListShowController(ShoppingListService) {
+    var showList = this;
+
+    showList.items = ShoppingListService.getItems();
+
+    showList.removeItem = function (itemIndex) {
+      ShoppingListService.removeItem(itemIndex);
+    };
   }
 
-  // ** Controller As syntax
-  function ParentController2() {
-    var parent = this;
-    parent.value = 1;
-  }
+  function ShoppingListService() {
+    var service = this;
 
-  ChildController2.$inject = ["$scope"];
-  function ChildController2($scope) {
-    var child = this;
-    child.value = 5;
-    console.log("ChildController2 $scope: ", $scope);
+    // List of shopping items
+    var items = [];
+
+    service.addItem = function (itemName, quantity) {
+      var item = {
+        name: itemName,
+        quantity: quantity
+      };
+      items.push(item);
+    };
+
+    service.removeItem = function (itemIndex) {
+      items.splice(itemIndex, 1);
+    };
+
+    service.getItems = function () {
+      return items;
+    };
   }
 })();
 
 /*
-
 SUMMARY
 
-What we learned as part of this lecture applies to MUCH MORE than just the Controller As syntax
+Controllers are not suppose to
+	- handle business logic
+	- code sharing
+	- be used to share data across other components
 
-Inheritance in general is used for code re-use (and sometimes to express a relationship between entities)
+Custom services instantiated with .service method
+	- singletons (only 1 instance of object exists)
+	- lazily instantiated (only created if someting depends on them)
 
-Prototypal inheritance in JS is based on object instances rather than classes
-	- Property is inherited from parent, looked up through Prototype Chain
-	- Property is local if it's declared on the child with the same name as the parent and therefore masking the parent's property
-
-$scope is based on prototypal inheritance
-	- Child controller's $scope inherits from parent controller's $scope
-
-Controller As syntax is 'ControllerName as label'
-
-Angular creates property 'label' on the $scope
-	- the label is a reference to 'this', i.e., instance of Controller
-	- works because .controller treats it as a function constructor
-
-Attach properties to 'this' inside of Controller, not $scope
-	- easier syntax in HTML and JS - no masking occurs
-
+.service('name', function), treats function as a function constructor
 */
