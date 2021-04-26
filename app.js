@@ -2,56 +2,35 @@
   "use strict";
 
   angular
-    .module("ControllerAsApp", [])
-    .controller("ShoppingListController1", ShoppingListController1)
-    .controller("ShoppingListController2", ShoppingListController2)
-    .factory("ShoppingListFactory", ShoppingListFactory);
+    .module("ShoppingListApp", [])
+    .controller("ShoppingListController", ShoppingListController)
+    .provider("ShoppingListService", ShoppingListServiceProvider)
+    .config(Config);
 
-  // LIST #1 - controller
-  ShoppingListController1.$inject = ["ShoppingListFactory"];
-  function ShoppingListController1(ShoppingListFactory) {
-    var list1 = this;
-
-    // Use factory to create new shopping list service
-    var shoppingList = ShoppingListFactory();
-
-    list1.items = shoppingList.getItems();
-
-    list1.itemName = "";
-    list1.itemQuantity = "";
-
-    list1.addItem = function () {
-      shoppingList.addItem(list1.itemName, list1.itemQuantity);
-    };
-
-    list1.removeItem = function (itemIndex) {
-      shoppingList.removeItem(itemIndex);
-    };
+  Config.$inject = ["ShoppingListServiceProvider"];
+  function Config(ShoppingListServiceProvider) {
+    ShoppingListServiceProvider.defaults.maxItems = 2;
   }
 
-  // LIST #2 - controller
-  ShoppingListController2.$inject = ["ShoppingListFactory"];
-  function ShoppingListController2(ShoppingListFactory) {
-    var list2 = this;
+  ShoppingListController.$inject = ["ShoppingListService"];
+  function ShoppingListController(ShoppingListService) {
+    var list = this;
 
-    // Use factory to create new shopping list service
-    var shoppingList = ShoppingListFactory(3);
+    list.items = ShoppingListService.getItems();
 
-    list2.items = shoppingList.getItems();
+    list.itemName = "";
+    list.itemQuantity = "";
 
-    list2.itemName = "";
-    list2.itemQuantity = "";
-
-    list2.addItem = function () {
+    list.addItem = function () {
       try {
-        shoppingList.addItem(list2.itemName, list2.itemQuantity);
+        ShoppingListService.addItem(list.itemName, list.itemQuantity);
       } catch (error) {
-        list2.errorMessage = error.message;
+        list.errorMessage = error.message;
       }
     };
 
-    list2.removeItem = function (itemIndex) {
-      shoppingList.removeItem(itemIndex);
+    list.removeItem = function (itemIndex) {
+      ShoppingListService.removeItem(itemIndex);
     };
   }
 
@@ -83,26 +62,32 @@
     };
   }
 
-  function ShoppingListFactory() {
-    var factory = function (maxItems) {
-      return new ShoppingListService(maxItems);
+  function ShoppingListServiceProvider() {
+    var provider = this;
+
+    provider.defaults = {
+      maxItems: 10
     };
 
-    return factory;
+    provider.$get = function () {
+      var shoppingList = new ShoppingListService(provider.defaults.maxItems);
+
+      return shoppingList;
+    };
   }
 })();
 
 /*
 SUMMARY
 
-.factory() allows us to produce any type of object or function
-  - that includes a service (even a singleton), but is NOT limited to
-  - .service() is just a more limited factory
+.provider() - most verbose, but most flexible
+  - configure factory not just at time of use, but at app bootstrapping
 
-.factory('name', FactoryFunction) - name is what's injected
+.provider('name', function)
+  - whatever the 'name' is - that's what gets injected into other components
 
-Injected factory function refers to whatever is returned in the factory function
-  - can be object literal with a prop that's a function that creates something
-  - can be a function that creates something
+.config() function gets called before any service, factory, or controller is instantiated
+  - therefore, we can't inject any regular components into .config
+  - we CAN inject the provider of service with nameProvider
 
 */
