@@ -4,33 +4,33 @@
   angular
     .module("ShoppingListApp", [])
     .controller("ShoppingListController", ShoppingListController)
-    .provider("ShoppingListService", ShoppingListServiceProvider)
+    .provider("ShoppingList", ShoppingListProvider)
     .config(Config);
 
-  Config.$inject = ["ShoppingListServiceProvider"];
-  function Config(ShoppingListServiceProvider) {
-    ShoppingListServiceProvider.defaults.maxItems = 2;
+  Config.$inject = ["ShoppingListProvider"];
+  function Config(ShoppingListProvider) {
+    ShoppingListProvider.defaults.maxItems = 5;
   }
 
-  ShoppingListController.$inject = ["ShoppingListService"];
-  function ShoppingListController(ShoppingListService) {
+  ShoppingListController.$inject = ["ShoppingList"];
+  function ShoppingListController(ShoppingList) {
     var list = this;
 
-    list.items = ShoppingListService.getItems();
+    list.items = ShoppingList.getItems();
 
     list.itemName = "";
     list.itemQuantity = "";
 
     list.addItem = function () {
       try {
-        ShoppingListService.addItem(list.itemName, list.itemQuantity);
+        ShoppingList.addItem(list.itemName, list.itemQuantity);
       } catch (error) {
         list.errorMessage = error.message;
       }
     };
 
     list.removeItem = function (itemIndex) {
-      ShoppingListService.removeItem(itemIndex);
+      ShoppingList.removeItem(itemIndex);
     };
   }
 
@@ -62,11 +62,11 @@
     };
   }
 
-  function ShoppingListServiceProvider() {
+  function ShoppingListProvider() {
     var provider = this;
 
     provider.defaults = {
-      maxItems: 10
+      maxItems: 100
     };
 
     provider.$get = function () {
@@ -80,14 +80,10 @@
 /*
 SUMMARY
 
-.provider() - most verbose, but most flexible
-  - configure factory not just at time of use, but at app bootstrapping
+ng-if is a genral purpose "if statement" like attribute directive
+  - if its value is false, angular removes the containing element from the DOM entirely
 
-.provider('name', function)
-  - whatever the 'name' is - that's what gets injected into other components
-
-.config() function gets called before any service, factory, or controller is instantiated
-  - therefore, we can't inject any regular components into .config
-  - we CAN inject the provider of service with nameProvider
+ng-show/ng-hide attribute directives automatically attach CSS classes to the containing element that either show or hide the element
+  - the containing element does NOT get removed from the DOM
 
 */
