@@ -2,55 +2,90 @@
   "use strict";
 
   angular
-    .module("ShoppingListApp", [])
+    .module("ShoppingListPromiseApp", [])
     .controller("ShoppingListController", ShoppingListController)
-    .provider("ShoppingList", ShoppingListProvider)
-    .config(Config);
+    .service("ShoppingListService", ShoppingListService)
+    .service("WeightLossFilterService", WeightLossFilterService);
 
-  Config.$inject = ["ShoppingListProvider"];
-  function Config(ShoppingListProvider) {
-    ShoppingListProvider.defaults.maxItems = 5;
-  }
-
-  ShoppingListController.$inject = ["ShoppingList"];
-  function ShoppingListController(ShoppingList) {
+  ShoppingListController.$inject = ["ShoppingListService"];
+  function ShoppingListController(ShoppingListService) {
     var list = this;
 
-    list.items = ShoppingList.getItems();
+    list.items = ShoppingListService.getItems();
 
     list.itemName = "";
     list.itemQuantity = "";
 
     list.addItem = function () {
-      try {
-        ShoppingList.addItem(list.itemName, list.itemQuantity);
-      } catch (error) {
-        list.errorMessage = error.message;
-      }
+      ShoppingListService.addItem(list.itemName, list.itemQuantity);
     };
 
     list.removeItem = function (itemIndex) {
-      ShoppingList.removeItem(itemIndex);
+      ShoppingListService.removeItem(itemIndex);
     };
   }
 
-  // If not specified, maxItems assumed unlimited
-  function ShoppingListService(maxItems) {
+  ShoppingListService.$inject = ["$q", "WeightLossFilterService"];
+  function ShoppingListService($q, WeightLossFilterService) {
     var service = this;
 
     // List of shopping items
     var items = [];
 
-    service.addItem = function (itemName, quantity) {
-      if (maxItems === undefined || (maxItems !== undefined && items.length < maxItems)) {
-        var item = {
-          name: itemName,
-          quantity: quantity
-        };
-        items.push(item);
-      } else {
-        throw new Error("Max items (" + maxItems + ") reached.");
-      }
+    // service.addItem = function (name, quantity) {
+    //   var promise = WeightLossFilterService.checkName(name);
+    //
+    //   promise.then(function (response) {
+    //     var nextPromise = WeightLossFilterService.checkQuantity(quantity);
+    //
+    //     nextPromise.then(function (result) {
+    //       var item = {
+    //         name: name,
+    //         quantity: quantity
+    //       };
+    //       items.push(item);
+    //     }, function (errorResponse) {
+    //       console.log(errorResponse.message);
+    //     });
+    //   }, function (errorResponse) {
+    //     console.log(errorResponse.message);
+    //   });
+    // };
+
+    // service.addItem = function (name, quantity) {
+    //   var promise = WeightLossFilterService.checkName(name);
+    //
+    //   promise
+    //   .then(function (response) {
+    //     return WeightLossFilterService.checkQuantity(quantity);
+    //   })
+    //   .then(function (response) {
+    //     var item = {
+    //       name: name,
+    //       quantity: quantity
+    //     };
+    //     items.push(item);
+    //   })
+    //   .catch(function (errorResponse) {
+    //     console.log(errorResponse.message);
+    //   });
+    // };
+
+    service.addItem = function (name, quantity) {
+      var namePromise = WeightLossFilterService.checkName(name);
+      var quantityPromise = WeightLossFilterService.checkQuantity(quantity);
+
+      $q.all([namePromise, quantityPromise])
+        .then(function (response) {
+          var item = {
+            name: name,
+            quantity: quantity
+          };
+          items.push(item);
+        })
+        .catch(function (errorResponse) {
+          console.log(errorResponse.message);
+        });
     };
 
     service.removeItem = function (itemIndex) {
@@ -62,28 +97,47 @@
     };
   }
 
-  function ShoppingListProvider() {
-    var provider = this;
+  WeightLossFilterService.$inject = ["$q", "$timeout"];
+  function WeightLossFilterService($q, $timeout) {
+    var service = this;
 
-    provider.defaults = {
-      maxItems: 100
+    service.checkName = function (name) {
+      var deferred = $q.defer();
+
+      var result = {
+        message: ""
+      };
+
+      $timeout(function () {
+        // Check for cookies
+        if (name.toLowerCase().indexOf("cookie") === -1) {
+          deferred.resolve(result);
+        } else {
+          result.message = "Stay away from cookies, Yaakov!";
+          deferred.reject(result);
+        }
+      }, 3000);
+
+      return deferred.promise;
     };
 
-    provider.$get = function () {
-      var shoppingList = new ShoppingListService(provider.defaults.maxItems);
+    service.checkQuantity = function (quantity) {
+      var deferred = $q.defer();
+      var result = {
+        message: ""
+      };
 
-      return shoppingList;
+      $timeout(function () {
+        // Check for too many boxes
+        if (quantity < 6) {
+          deferred.resolve(result);
+        } else {
+          result.message = "That's too much, Yaakov!";
+          deferred.reject(result);
+        }
+      }, 1000);
+
+      return deferred.promise;
     };
   }
 })();
-
-/*
-SUMMARY
-
-ng-if is a genral purpose "if statement" like attribute directive
-  - if its value is false, angular removes the containing element from the DOM entirely
-
-ng-show/ng-hide attribute directives automatically attach CSS classes to the containing element that either show or hide the element
-  - the containing element does NOT get removed from the DOM
-
-*/
